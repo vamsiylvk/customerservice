@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RegistrationController {
     @GetMapping("/hello")
     public  @ResponseBody String sayHello(String name) {
-        return "hello mama";
+        return "hello";
     }
 
 }
