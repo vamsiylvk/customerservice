@@ -1,0 +1,169 @@
+openapi: "3.0.0"
+info:
+  title: Microservices Assignment Project
+  description: Implementation of project using OpenAPI,OAuth,Kafka
+  version: 1.0.1
+servers:
+ - url: http://localhost:8080/api/v1
+   description: "local server"
+security :
+ - oauthsample:
+   - read
+   - write
+paths:
+  /registerCustomer:
+    post:
+      tags:
+        - "Customer"
+      description: ""
+      summary: To Register a Customer
+      operationId: "addCustomer"
+      requestBody:
+         content:
+          application/json:
+           schema:
+            $ref: "#/components/schemas/Customer"
+      responses:
+        '200':
+          description: Customer Registered Successfully
+          content:
+           application/json:
+            schema:
+             $ref: "#/components/schemas/ApiResponse"
+        '400':
+          description: Bad request.
+          content:
+           application/json:
+            schema:
+             $ref: "#/components/schemas/ApiResponse"
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+           application/json:
+            schema:
+             $ref: "#/components/schemas/ApiResponse"
+        '404':
+          description: A Customer with the specified ID was not found.
+          content:
+           application/json:
+            schema:
+             $ref: "#/components/schemas/ApiResponse"
+          
+      parameters:
+       - name: "AuthenticationId"
+         in: "header"
+         required: true
+         schema:
+           type: string
+       - name: "TransactionId"
+         in: "header"
+         required: true
+         schema:
+           type: string
+       - name: "ActivityId "
+         in: "header"
+         required: true
+         schema:
+          type: string
+      
+           
+           
+components:
+  securitySchemes:
+    oauthsample:
+      type: oauth2
+      description: This API uses OAuth 2 with the client-credential grant flow
+      flows:
+       clientCredentials:
+         tokenUrl: "http://localhost:8084/oauth/token?grant_type=client_credentials"
+         scopes:
+           read: Grants read access
+           write: Grants write access
+  schemas:
+    Customer:
+     type: object
+     required:
+        - customerId
+        - firstName
+        - lastName
+        - birthDate
+        - country
+        - countryCode
+        - email
+        - customerStatus
+        - address
+     properties:
+      customerId:
+        type: string
+        description: "customerID of format:C000000001"
+        maxLength: 10
+      firstName:
+        type: string
+        description: "firstName of customer"
+        minLength: 10
+        maxLength: 50
+      lastName:
+        type: string
+        description: "lastName of customer"
+        minLength: 10
+        maxLength: 50
+      birthDate:
+        type: string
+        description: "Date of Birth of customer of format DD-MM-YYYY"
+        pattern: "^(3[01]|[12][0-9]|0[1-9])-(1[0-2]|0[1-9])-[0-9]{4}$"
+      country:
+        type: string
+        description: "Country Name of customer"
+      countryCode:
+        type: string
+        description: "Country Code of customer"
+        maxLength: 2
+      email:
+        type: string
+        description: "Must be Email ID of customer"
+        format: email
+        maxLength: 50
+      mobileNumber:
+        type: string
+        description: "Valid mobile Number"
+        maxLength: 10
+      customerStatus:
+        type: string
+        description: "Customer Status"
+        enum:
+         - Open
+         - Close
+         - Suspended
+         - restored
+      address:
+         $ref: "#/components/schemas/Address"
+    Address:
+      type: object
+      required:
+       - addressLine1
+       - postalCode
+      properties:
+       addressLine1:
+        description: "Customer Address Line 1"
+        type: string
+        maxLength: 50
+       addressLine2:
+        description: "Customer Address Line 2"
+        type: string
+       street:
+        description: "Street"
+        type: string
+       postalCode:
+        description: "Valid postal code"
+        type: string
+        maxLength: 5
+    ApiResponse:
+      type: "object"
+      properties:
+        code:
+         type: "integer"
+         format: "int32"
+        type:
+          type: "string"
+        message:
+          type: "string" 
